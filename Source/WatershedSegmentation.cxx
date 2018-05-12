@@ -72,7 +72,12 @@ std::string WatershedSegmentation::applyWatershedSegmentation(float threshold, f
 
 	// write to filesystem and return file name
 	std::stringstream outfile;
-	outfile << "out_" << threshold << "_" << level << "_segmentation.dcm";
+	if (labelValue != 0) {
+		outfile << "out_" << threshold << "_" << level << "_" << labelValue << "_segmentation.dcm";
+	}
+	else {
+		outfile << "out_" << threshold << "_" << level << "_segmentation.dcm";
+	}
 
 	seg_writer->SetFileName(outfile.str().c_str());
 	seg_writer->SetInput(colorMapFilter->GetOutput());
@@ -140,6 +145,7 @@ void WatershedSegmentation::updateLabels(
 				changeLabelImageFilter->SetChange(labelImageValue, background);
 			}
 			// Remove labels for dark regions (extra regions on the edge)
+			
 			labelMean = labelStatisticsImageFilter->GetMean(labelImageValue);
 			if (labelMean < 5) {
 				changeLabelImageFilter->SetChange(labelImageValue, background);
